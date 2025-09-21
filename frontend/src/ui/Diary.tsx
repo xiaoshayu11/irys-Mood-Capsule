@@ -238,13 +238,13 @@ export const Diary: React.FC<Props> = ({ route }) => {
 
 
         {/* Mascots */}
-      <LeftMascot customImage="/src/assets/mascots/left-mascot.png" />
+      <LeftMascot customImage="/assets/mascots/left-mascot.png" />
       <RightMascots customImages={[
-        '/src/assets/mascots/mascot1.png',
-        '/src/assets/mascots/mascot2.png',
-        '/src/assets/mascots/mascot3.png',
-        '/src/assets/mascots/mascot4.png',
-        '/src/assets/mascots/mascot5.png',
+        '/assets/mascots/mascot1.png',
+        '/assets/mascots/mascot2.png',
+        '/assets/mascots/mascot3.png',
+        '/assets/mascots/mascot4.png',
+        '/assets/mascots/mascot5.png',
       ]} />
 
       {/* Main content area */}
