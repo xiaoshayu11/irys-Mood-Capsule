@@ -237,7 +237,26 @@ export const Diary: React.FC<Props> = ({ route }) => {
 
 
 
-        {/* Mascots */}
+        {/* Debug info for images */}
+      <div style={{
+        position: 'fixed',
+        top: '100px',
+        left: '20px',
+        background: 'rgba(0,0,0,0.8)',
+        color: 'white',
+        padding: '10px',
+        borderRadius: '5px',
+        fontSize: '12px',
+        zIndex: 9999,
+        maxWidth: '300px'
+      }}>
+        <div>Debug Info:</div>
+        <div>Left Mascot: /assets/mascots/left-mascot.png</div>
+        <div>Right Mascots: /assets/mascots/mascot1-5.png</div>
+        <div>Check browser console for image errors</div>
+      </div>
+
+      {/* Mascots */}
       <LeftMascot customImage="/assets/mascots/left-mascot.png" />
       <RightMascots customImages={[
         '/assets/mascots/mascot1.png',

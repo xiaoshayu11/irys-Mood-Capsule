@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Test</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: white;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .test-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .test-item {
+            border: 1px solid #333;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .test-item img {
+            max-width: 100px;
+            max-height: 100px;
+            border: 1px solid #00FFD1;
+            margin: 5px;
+        }
+        .error {
+            color: #ff6b6b;
+        }
+        .success {
+            color: #51cf66;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Path Test</h1>
+    <div class="test-container">
+        <div class="test-item">
+            <h3>Left Mascot Test</h3>
+            <img src="/assets/mascots/left-mascot.png" alt="Left Mascot" onerror="this.style.border='2px solid red'; this.alt='ERROR: Image not found';">
+            <p>Path: /assets/mascots/left-mascot.png</p>
+        </div>
+        
+        <div class="test-item">
+            <h3>Right Mascots Test</h3>
+            <img src="/assets/mascots/mascot1.png" alt="Mascot 1" onerror="this.style.border='2px solid red'; this.alt='ERROR: Image not found';">
+            <img src="/assets/mascots/mascot2.png" alt="Mascot 2" onerror="this.style.border='2px solid red'; this.alt='ERROR: Image not found';">
+            <img src="/assets/mascots/mascot3.png" alt="Mascot 3" onerror="this.style.border='2px solid red'; this.alt='ERROR: Image not found';">
+            <img src="/assets/mascots/mascot4.png" alt="Mascot 4" onerror="this.style.border='2px solid red'; this.alt='ERROR: Image not found';">
+            <img src="/assets/mascots/mascot5.png" alt="Mascot 5" onerror="this.style.border='2px solid red'; this.alt='ERROR: Image not found';">
+            <p>Paths: /assets/mascots/mascot1-5.png</p>
+        </div>
+        
+        <div class="test-item">
+            <h3>Alternative Paths Test</h3>
+            <img src="./assets/mascots/left-mascot.png" alt="Left Mascot (relative)" onerror="this.style.border='2px solid red'; this.alt='ERROR: Image not found';">
+            <img src="assets/mascots/mascot1.png" alt="Mascot 1 (relative)" onerror="this.style.border='2px solid red'; this.alt='ERROR: Image not found';">
+            <p>Alternative paths: ./assets/mascots/ and assets/mascots/</p>
+        </div>
+    </div>
+    
+    <script>
+        // Check if images loaded successfully
+        document.addEventListener('DOMContentLoaded', function() {
+            const images = document.querySelectorAll('img');
+            images.forEach(img => {
+                img.addEventListener('load', function() {
+                    this.style.border = '2px solid #51cf66';
+                    this.alt = 'SUCCESS: Image loaded';
+                });
+                img.addEventListener('error', function() {
+                    this.style.border = '2px solid #ff6b6b';
+                    this.alt = 'ERROR: Image not found';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
