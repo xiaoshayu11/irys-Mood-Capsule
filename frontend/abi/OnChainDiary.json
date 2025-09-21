@@ -1,0 +1,154 @@
+[
+  {
+    "type": "event",
+    "name": "DiaryWritten",
+    "inputs": [
+      { "name": "user", "type": "address", "indexed": true },
+      { "name": "date", "type": "uint256", "indexed": true },
+      { "name": "content", "type": "string", "indexed": false },
+      { "name": "imageHash", "type": "string", "indexed": false },
+      { "name": "submissionIndex", "type": "uint256", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TesterAdded",
+    "inputs": [
+      { "name": "tester", "type": "address", "indexed": true }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "TesterRemoved",
+    "inputs": [
+      { "name": "tester", "type": "address", "indexed": true }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "event",
+    "name": "DiaryMintedAsNFT",
+    "inputs": [
+      { "name": "user", "type": "address", "indexed": true },
+      { "name": "tokenId", "type": "uint256", "indexed": true },
+      { "name": "date", "type": "uint256", "indexed": false }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "name": "writeDiary",
+    "inputs": [
+      { "name": "_content", "type": "string" },
+      { "name": "_imageHash", "type": "string" }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "name": "mintDiaryAsNFT",
+    "inputs": [],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "name": "getDiary",
+    "inputs": [
+      { "name": "_user", "type": "address" },
+      { "name": "_date", "type": "uint256" }
+    ],
+    "outputs": [{ "name": "", "type": "string[]" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "name": "getDiaryImage",
+    "inputs": [
+      { "name": "_user", "type": "address" },
+      { "name": "_date", "type": "uint256" }
+    ],
+    "outputs": [{ "name": "", "type": "string[]" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "name": "getDiaryEntry",
+    "inputs": [
+      { "name": "_user", "type": "address" },
+      { "name": "_date", "type": "uint256" },
+      { "name": "_index", "type": "uint256" }
+    ],
+    "outputs": [{ "name": "", "type": "string" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "name": "getDailySubmissionCount",
+    "inputs": [
+      { "name": "_user", "type": "address" },
+      { "name": "_date", "type": "uint256" }
+    ],
+    "outputs": [{ "name": "", "type": "uint256" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "name": "isTester",
+    "inputs": [
+      { "name": "_address", "type": "address" }
+    ],
+    "outputs": [{ "name": "", "type": "bool" }]
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "name": "addTester",
+    "inputs": [
+      { "name": "_tester", "type": "address" }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "nonpayable",
+    "name": "removeTester",
+    "inputs": [
+      { "name": "_tester", "type": "address" }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "name": "getDiaryNFT",
+    "inputs": [{ "name": "_tokenId", "type": "uint256" }],
+    "outputs": [
+      {
+        "name": "",
+        "type": "tuple",
+        "components": [
+          { "name": "author", "type": "address" },
+          { "name": "date", "type": "uint256" },
+          { "name": "content", "type": "string" },
+          { "name": "imageHash", "type": "string" },
+          { "name": "timestamp", "type": "uint256" }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "name": "totalSupply",
+    "inputs": [],
+    "outputs": [{ "name": "", "type": "uint256" }]
+  }
+]
+
+
+

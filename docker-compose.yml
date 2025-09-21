@@ -1,0 +1,14 @@
+version: '3.9'
+services:
+  frontend:
+    build:
+      context: ./frontend
+    image: onchain-diary-frontend
+    container_name: onchain-diary-frontend
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_DIARY_ADDRESS=${VITE_DIARY_ADDRESS}
+
+
+
