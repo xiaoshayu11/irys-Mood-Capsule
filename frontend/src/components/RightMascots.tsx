@@ -85,11 +85,11 @@ interface RightMascotsProps {
 
 const RightMascots: React.FC<RightMascotsProps> = ({ customImages }) => {
   const defaultImages = [
-    '/assets/mascots/mascot1.png',
-    '/assets/mascots/mascot2.png',
-    '/assets/mascots/mascot3.png',
-    '/assets/mascots/mascot4.png',
-    '/assets/mascots/mascot5.png',
+    '/mascots/mascot1.png',
+    '/mascots/mascot2.png',
+    '/mascots/mascot3.png',
+    '/mascots/mascot4.png',
+    '/mascots/mascot5.png',
   ];
 
   const images = customImages || defaultImages;
