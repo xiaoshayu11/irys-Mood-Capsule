@@ -183,9 +183,9 @@ export const Diary: React.FC<Props> = ({ route }) => {
   const uploadToIPFS = async (file: File): Promise<string> => {
     setIsUploading(true)
     try {
-      // 检查文件大小，限制为1MB以内
-      if (file.size > 1024 * 1024) {
-        throw new Error('图片大小不能超过1MB，请压缩后重试')
+      // 检查文件大小，限制为3MB以内（实际处理限制）
+      if (file.size > 3 * 1024 * 1024) {
+        throw new Error('图片大小不能超过3MB，请选择较小的图片或压缩后重试')
       }
       
       // 压缩图片
@@ -200,7 +200,7 @@ export const Diary: React.FC<Props> = ({ route }) => {
             const base64Data = base64.split(',')[1] || base64
             
             // 限制base64长度，如果太长则截断
-            const maxLength = 10000 // 限制为10KB
+            const maxLength = 20000 // 限制为20KB，给更多空间
             if (base64Data.length > maxLength) {
               console.warn('图片数据过长，将被截断')
               const truncatedData = base64Data.substring(0, maxLength)
@@ -232,7 +232,7 @@ export const Diary: React.FC<Props> = ({ route }) => {
       console.log('开始压缩图片...')
       
       // 如果文件很小，直接返回
-      if (file.size < 100 * 1024) { // 小于100KB
+      if (file.size < 200 * 1024) { // 小于200KB
         console.log('图片较小，无需压缩')
         resolve(file)
         return
@@ -288,7 +288,7 @@ export const Diary: React.FC<Props> = ({ route }) => {
             } else {
               reject(new Error('图片压缩失败：无法生成blob'))
             }
-          }, 'image/jpeg', 0.8) // 80%质量
+          }, 'image/jpeg', 0.9) // 90%质量，更好的图片质量
         } catch (error) {
           console.error('压缩过程中出错:', error)
           reject(new Error('图片压缩过程中出错'))
@@ -669,7 +669,8 @@ export const Diary: React.FC<Props> = ({ route }) => {
                   } catch (error) {
                     console.error('图片上传失败:', error)
                     alert(`图片上传失败: ${error.message || '未知错误'}，将只提交文字`)
-                    imageHash = ''
+                    // 图片上传失败时，不继续提交，直接返回
+                    return
                   }
                 }
                 
