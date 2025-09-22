@@ -533,7 +533,7 @@ export const Diary: React.FC<Props> = ({ route }) => {
               fontStyle: 'italic',
               textAlign: 'center'
             }}>
-              或上传自定义图片 (可选，最大5MB)
+              或上传自定义图片 (可选，最大3MB)
             </label>
             <div style={{
               border: 'none',

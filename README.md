@@ -198,8 +198,37 @@ server {
 #### 5. 启用配置
 
 ```bash
+# 创建软链接启用站点
 ln -s /etc/nginx/sites-available/irys-diary /etc/nginx/sites-enabled/
+
+# 测试配置
 nginx -t
+
+# 重启 Nginx
+systemctl restart nginx
+
+# 检查状态
+systemctl status nginx
+```
+
+#### 6. 更新部署（代码更新后）
+
+当代码更新后，重新部署：
+
+```bash
+# 拉取最新代码
+git pull
+
+# 重新构建
+cd frontend
+npm run build
+
+# 更新网站文件
+cp -r dist/* /var/www/irys-diary/
+chown -R www-data:www-data /var/www/irys-diary
+chmod -R 755 /var/www/irys-diary
+
+# 重启 Nginx（可选，通常不需要）
 systemctl restart nginx
 ```
 
