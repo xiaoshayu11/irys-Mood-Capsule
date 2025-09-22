@@ -530,14 +530,29 @@ export const Diary: React.FC<Props> = ({ route }) => {
                 console.log('调用合约参数:', [content, imageHash])
                 
                 try {
-                  await writeContract({
+                  console.log('开始调用合约...')
+                  console.log('合约地址:', CONTRACT_ADDRESS)
+                  console.log('参数:', [content, imageHash])
+                  console.log('ABI:', abi)
+                  console.log('用户地址:', address)
+                  console.log('是否连接:', isConnected)
+                  
+                  const result = await writeContract({
                     abi: abi,
                     address: (CONTRACT_ADDRESS || '') as `0x${string}`,
                     functionName: 'writeDiary',
                     args: [content, imageHash]
                   })
+                  console.log('合约调用成功:', result)
                 } catch (error: any) {
                   console.error('合约调用错误:', error)
+                  console.error('错误详情:', {
+                    message: error.message,
+                    code: error.code,
+                    name: error.name,
+                    cause: error.cause,
+                    stack: error.stack
+                  })
                   // 错误会被 useWriteContract 的 error 状态捕获，这里不需要额外处理
                 }
               }}
@@ -593,7 +608,7 @@ export const Diary: React.FC<Props> = ({ route }) => {
                 ❌ {(writeError.message && (writeError.message.includes('Daily limit reached'))) ||
                     (writeError.message && writeError.message.includes('User rejected')) ? 
                   (writeError.message.includes('Daily limit reached') ? '今日心情已达上限（5次），明天再来吧！' : '交易已取消') : 
-                  '提交失败，请重试'}
+                  `提交失败: ${writeError.message || '未知错误'}`}
               </span>
               <button
                 onClick={() => resetWriteContract()}
