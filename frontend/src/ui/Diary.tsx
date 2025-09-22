@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { useAccount, useConnect, useDisconnect, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import abi from '../../abi/OnChainDiary.json'
 import { formatEther, zeroAddress } from 'viem'
@@ -94,6 +94,19 @@ export const Diary: React.FC<Props> = ({ route }) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  
+  // 使用ref确保获取到最新的状态
+  const selectedEmojiRef = useRef<string | null>(null)
+  const selectedImageRef = useRef<File | null>(null)
+  
+  // 同步状态到ref
+  useEffect(() => {
+    selectedEmojiRef.current = selectedEmoji
+  }, [selectedEmoji])
+  
+  useEffect(() => {
+    selectedImageRef.current = selectedImage
+  }, [selectedImage])
 
   // Mood component configuration
   const moods = [
@@ -351,9 +364,21 @@ export const Diary: React.FC<Props> = ({ route }) => {
                       e.preventDefault()
                       e.stopPropagation()
                       console.log('点击表情:', mood.id)
-                      setSelectedEmoji(mood.id)
+                      
+                      // 使用函数式更新确保状态正确设置
+                      setSelectedEmoji(prev => {
+                        console.log('设置表情状态:', mood.id, '之前:', prev)
+                        return mood.id
+                      })
+                      
+                      // 清除图片选择
                       setSelectedImage(null)
                       setImagePreview(null)
+                      
+                      // 强制重新渲染
+                      setTimeout(() => {
+                        console.log('表情状态更新后:', mood.id)
+                      }, 0)
                     }}
                     style={{
                       width: '90px',
@@ -526,14 +551,21 @@ export const Diary: React.FC<Props> = ({ route }) => {
                   return
                 }
                 
+                // 使用ref确保获取到最新的状态
+                const currentSelectedEmoji = selectedEmojiRef.current
+                const currentSelectedImage = selectedImageRef.current
+                
+                console.log('当前表情状态:', currentSelectedEmoji)
+                console.log('当前图片状态:', currentSelectedImage)
+                
                 let imageHash = ''
-                if (selectedEmoji) {
-                  imageHash = `emoji:${selectedEmoji}`
-                  console.log('使用表情:', selectedEmoji)
-                } else if (selectedImage) {
+                if (currentSelectedEmoji) {
+                  imageHash = `emoji:${currentSelectedEmoji}`
+                  console.log('使用表情:', currentSelectedEmoji)
+                } else if (currentSelectedImage) {
                   console.log('开始上传图片...')
                   try {
-                    imageHash = await uploadToIPFS(selectedImage)
+                    imageHash = await uploadToIPFS(currentSelectedImage)
                     console.log('图片hash长度:', imageHash.length)
                   } catch (error) {
                     console.error('Image upload failed:', error)

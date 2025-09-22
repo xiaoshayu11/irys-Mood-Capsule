@@ -2,7 +2,14 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig(({ mode }) => ({
-  plugins: [react()],
+  plugins: [
+    react({
+      // 在生产环境禁用热更新
+      ...(mode === 'production' && {
+        fastRefresh: false
+      })
+    })
+  ],
   server: {
     host: true
   },
@@ -14,7 +21,9 @@ export default defineConfig(({ mode }) => ({
         return id.includes('vite/client') || 
                id.includes('@vite/client') ||
                id.includes('@vite/env') ||
-               id.includes('vite/hmr')
+               id.includes('vite/hmr') ||
+               id.includes('vite/ssr') ||
+               id.includes('@vite/plugin-react')
       }
     }
   },
@@ -22,7 +31,9 @@ export default defineConfig(({ mode }) => ({
     // 确保生产环境变量正确设置
     'process.env.NODE_ENV': JSON.stringify(mode === 'production' ? 'production' : 'development'),
     'import.meta.env.DEV': mode !== 'production',
-    'import.meta.env.PROD': mode === 'production'
+    'import.meta.env.PROD': mode === 'production',
+    // 强制禁用HMR
+    'import.meta.hot': 'undefined'
   },
   // 完全禁用HMR在生产环境
   ...(mode === 'production' && {
