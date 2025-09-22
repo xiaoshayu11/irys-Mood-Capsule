@@ -347,7 +347,10 @@ export const Diary: React.FC<Props> = ({ route }) => {
                 return (
                   <div
                     key={index}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      console.log('点击表情:', mood.id)
                       setSelectedEmoji(mood.id)
                       setSelectedImage(null)
                       setImagePreview(null)

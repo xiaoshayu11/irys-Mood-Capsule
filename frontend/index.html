@@ -7,12 +7,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=Source+Code+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+      // 修复浏览器插件注入的chrome.runtime.sendMessage报错
+      (function() {
+        if (typeof chrome !== 'undefined' && chrome.runtime) {
+          const originalSendMessage = chrome.runtime.sendMessage;
+          chrome.runtime.sendMessage = function() {
+            try {
+              return originalSendMessage.apply(this, arguments);
+            } catch (e) {
+              // 忽略插件注入的错误
+              console.warn('Extension message error ignored:', e.message);
+              return Promise.resolve();
+            }
+          };
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
-  </html>
+</html>
 
 
 
