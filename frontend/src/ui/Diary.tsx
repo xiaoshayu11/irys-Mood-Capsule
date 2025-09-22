@@ -506,12 +506,25 @@ export const Diary: React.FC<Props> = ({ route }) => {
             <button
               disabled={!isConnected || !canSubmit || isWritePending || isConfirming || isUploading}
               onClick={async () => {
-                console.log('提交日记:', content)
+                console.log('=== 开始提交日记 ===')
+                console.log('内容:', content)
                 console.log('合约地址:', CONTRACT_ADDRESS)
+                console.log('用户地址:', address)
+                console.log('是否连接:', isConnected)
+                
+                // 检查基本条件
+                if (!isConnected) {
+                  alert('请先连接钱包')
+                  return
+                }
+                
+                if (!address) {
+                  alert('钱包地址为空')
+                  return
+                }
                 
                 let imageHash = ''
                 if (selectedEmoji) {
-                  // 使用表情作为图片
                   imageHash = `emoji:${selectedEmoji}`
                   console.log('使用表情:', selectedEmoji)
                 } else if (selectedImage) {
@@ -519,7 +532,6 @@ export const Diary: React.FC<Props> = ({ route }) => {
                   try {
                     imageHash = await uploadToIPFS(selectedImage)
                     console.log('图片hash长度:', imageHash.length)
-                    // 不再截断图片数据，保持完整
                   } catch (error) {
                     console.error('Image upload failed:', error)
                     alert('图片上传失败，将只提交文字')
@@ -527,33 +539,21 @@ export const Diary: React.FC<Props> = ({ route }) => {
                   }
                 }
                 
-                console.log('调用合约参数:', [content, imageHash])
+                console.log('最终参数:', [content, imageHash])
                 
+                // 直接调用writeContract，让错误处理机制捕获
                 try {
-                  console.log('开始调用合约...')
-                  console.log('合约地址:', CONTRACT_ADDRESS)
-                  console.log('参数:', [content, imageHash])
-                  console.log('ABI:', abi)
-                  console.log('用户地址:', address)
-                  console.log('是否连接:', isConnected)
-                  
-                  const result = await writeContract({
+                  console.log('开始调用writeContract...')
+                  await writeContract({
                     abi: abi,
                     address: (CONTRACT_ADDRESS || '') as `0x${string}`,
                     functionName: 'writeDiary',
                     args: [content, imageHash]
                   })
-                  console.log('合约调用成功:', result)
+                  console.log('writeContract调用完成')
                 } catch (error: any) {
-                  console.error('合约调用错误:', error)
-                  console.error('错误详情:', {
-                    message: error.message,
-                    code: error.code,
-                    name: error.name,
-                    cause: error.cause,
-                    stack: error.stack
-                  })
-                  // 错误会被 useWriteContract 的 error 状态捕获，这里不需要额外处理
+                  console.error('writeContract错误:', error)
+                  alert(`合约调用失败: ${error.message || '未知错误'}`)
                 }
               }}
               style={{
