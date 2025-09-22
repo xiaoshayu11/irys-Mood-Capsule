@@ -229,48 +229,77 @@ export const Diary: React.FC<Props> = ({ route }) => {
   // 压缩图片
   const compressImage = (file: File): Promise<File> => {
     return new Promise((resolve, reject) => {
+      console.log('开始压缩图片...')
+      
+      // 如果文件很小，直接返回
+      if (file.size < 100 * 1024) { // 小于100KB
+        console.log('图片较小，无需压缩')
+        resolve(file)
+        return
+      }
+      
       const canvas = document.createElement('canvas')
       const ctx = canvas.getContext('2d')
+      
+      if (!ctx) {
+        reject(new Error('无法创建画布上下文'))
+        return
+      }
+      
       const img = new Image()
       
       img.onload = () => {
-        // 计算压缩后的尺寸
-        const maxWidth = 800
-        const maxHeight = 600
-        let { width, height } = img
-        
-        if (width > height) {
-          if (width > maxWidth) {
-            height = (height * maxWidth) / width
-            width = maxWidth
-          }
-        } else {
-          if (height > maxHeight) {
-            width = (width * maxHeight) / height
-            height = maxHeight
-          }
-        }
-        
-        canvas.width = width
-        canvas.height = height
-        
-        // 绘制压缩后的图片
-        ctx?.drawImage(img, 0, 0, width, height)
-        
-        canvas.toBlob((blob) => {
-          if (blob) {
-            const compressedFile = new File([blob], file.name, {
-              type: 'image/jpeg',
-              lastModified: Date.now()
-            })
-            resolve(compressedFile)
+        try {
+          console.log('原始图片尺寸:', img.width, 'x', img.height)
+          
+          // 计算压缩后的尺寸
+          const maxWidth = 800
+          const maxHeight = 600
+          let { width, height } = img
+          
+          if (width > height) {
+            if (width > maxWidth) {
+              height = (height * maxWidth) / width
+              width = maxWidth
+            }
           } else {
-            reject(new Error('图片压缩失败'))
+            if (height > maxHeight) {
+              width = (width * maxHeight) / height
+              height = maxHeight
+            }
           }
-        }, 'image/jpeg', 0.8) // 80%质量
+          
+          console.log('压缩后尺寸:', width, 'x', height)
+          
+          canvas.width = width
+          canvas.height = height
+          
+          // 绘制压缩后的图片
+          ctx.drawImage(img, 0, 0, width, height)
+          
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name, {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              })
+              console.log('压缩完成，新文件大小:', compressedFile.size)
+              resolve(compressedFile)
+            } else {
+              reject(new Error('图片压缩失败：无法生成blob'))
+            }
+          }, 'image/jpeg', 0.8) // 80%质量
+        } catch (error) {
+          console.error('压缩过程中出错:', error)
+          reject(new Error('图片压缩过程中出错'))
+        }
       }
       
-      img.onerror = () => reject(new Error('图片加载失败'))
+      img.onerror = (error) => {
+        console.error('图片加载失败:', error)
+        reject(new Error('图片加载失败'))
+      }
+      
       img.src = URL.createObjectURL(file)
     })
   }
@@ -629,12 +658,17 @@ export const Diary: React.FC<Props> = ({ route }) => {
                   console.log('使用表情:', currentSelectedEmoji)
                 } else if (currentSelectedImage) {
                   console.log('开始上传图片...')
+                  console.log('原始图片信息:', {
+                    name: currentSelectedImage.name,
+                    size: currentSelectedImage.size,
+                    type: currentSelectedImage.type
+                  })
                   try {
                     imageHash = await uploadToIPFS(currentSelectedImage)
-                    console.log('图片hash长度:', imageHash.length)
+                    console.log('图片上传成功，hash长度:', imageHash.length)
                   } catch (error) {
-                    console.error('Image upload failed:', error)
-                    alert('图片上传失败，将只提交文字')
+                    console.error('图片上传失败:', error)
+                    alert(`图片上传失败: ${error.message || '未知错误'}，将只提交文字`)
                     imageHash = ''
                   }
                 }
