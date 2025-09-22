@@ -167,7 +167,7 @@ export const Diary: React.FC<Props> = ({ route }) => {
     const file = event.target.files?.[0]
     if (file) {
       if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        alert('Image size cannot exceed 5MB')
+        alert('图片大小不能超过5MB，请选择较小的图片')
         return
       }
       setSelectedImage(file)
@@ -183,8 +183,14 @@ export const Diary: React.FC<Props> = ({ route }) => {
   const uploadToIPFS = async (file: File): Promise<string> => {
     setIsUploading(true)
     try {
-      // In a real project, this should upload to actual IPFS service
-      // Now using base64 as placeholder
+      // 检查文件大小，限制为1MB以内
+      if (file.size > 1024 * 1024) {
+        throw new Error('图片大小不能超过1MB，请压缩后重试')
+      }
+      
+      // 压缩图片
+      const compressedFile = await compressImage(file)
+      
       const reader = new FileReader()
       return new Promise((resolve, reject) => {
         reader.onload = () => {
@@ -192,15 +198,25 @@ export const Diary: React.FC<Props> = ({ route }) => {
             const base64 = reader.result as string
             // Extract base64 part, remove data:image/...;base64, prefix
             const base64Data = base64.split(',')[1] || base64
-            console.log('Original base64 length:', base64Data.length)
+            
+            // 限制base64长度，如果太长则截断
+            const maxLength = 10000 // 限制为10KB
+            if (base64Data.length > maxLength) {
+              console.warn('图片数据过长，将被截断')
+              const truncatedData = base64Data.substring(0, maxLength)
+              resolve(truncatedData)
+            } else {
+              resolve(base64Data)
+            }
+            
+            console.log('Base64 length:', base64Data.length)
             console.log('Base64 first 50 chars:', base64Data.substring(0, 50))
-            resolve(base64Data) // Should be IPFS hash in real implementation
           } catch (error) {
             reject(error)
           }
         }
         reader.onerror = () => reject(new Error('File read failed'))
-        reader.readAsDataURL(file)
+        reader.readAsDataURL(compressedFile)
       })
     } catch (error) {
       console.error('Image upload failed:', error)
@@ -208,6 +224,55 @@ export const Diary: React.FC<Props> = ({ route }) => {
     } finally {
       setIsUploading(false)
     }
+  }
+
+  // 压缩图片
+  const compressImage = (file: File): Promise<File> => {
+    return new Promise((resolve, reject) => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      const img = new Image()
+      
+      img.onload = () => {
+        // 计算压缩后的尺寸
+        const maxWidth = 800
+        const maxHeight = 600
+        let { width, height } = img
+        
+        if (width > height) {
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width
+            width = maxWidth
+          }
+        } else {
+          if (height > maxHeight) {
+            width = (width * maxHeight) / height
+            height = maxHeight
+          }
+        }
+        
+        canvas.width = width
+        canvas.height = height
+        
+        // 绘制压缩后的图片
+        ctx?.drawImage(img, 0, 0, width, height)
+        
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            })
+            resolve(compressedFile)
+          } else {
+            reject(new Error('图片压缩失败'))
+          }
+        }, 'image/jpeg', 0.8) // 80%质量
+      }
+      
+      img.onerror = () => reject(new Error('图片加载失败'))
+      img.src = URL.createObjectURL(file)
+    })
   }
 
   return (
